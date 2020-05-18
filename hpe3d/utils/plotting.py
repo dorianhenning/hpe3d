@@ -137,18 +137,15 @@ def subplot_mse(ax, name, **kwargs):
 
     '''
     count = 0
-#    c = [(0.8, 0.3, 0.3), (0.3, 0.8, 0.3)]
-    c = [red, green]
     for key, val in kwargs.items():
         assert val.ndim == 2
         assert val.shape[1] == 3
-        val2 = np.linalg.norm(val, axis=1) #** 2  # error^2 is MSE
+        val2 = np.linalg.norm(val, axis=1)
         val2_mean = np.mean(val2)
 
-        ax.plot(val2, label=key, color=c[count], linewidth=2.5)
+        ax.plot(val2, label=key, linewidth=2.5)
 
         ax.legend(loc='upper right', fontsize=20)
-#        ax.set_title('MSE ' + name)
         ax.text(0.02, (0.95 - count * .07), 'Mean %s: %.4f [m]' % (key, val2_mean),
                 horizontalalignment='left', verticalalignment='center', transform=ax.transAxes, fontsize=20)
         count += 1

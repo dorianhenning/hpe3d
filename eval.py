@@ -70,14 +70,7 @@ def main(args):
     # Filtering
     betas_filt = filter_variable(pred_betas, mode='c')
     poses_filt = filter_variable(pred_poses, mode='a', f1=100, f2=0.001)
-
-    # correct way:
     pos_filt = filter_variable(T_W_B[:, :3, 3].copy(), mode='a', f1=1000, f2=0.01)
-
-#    # Filtering
-#    betas_filt = filter_variable(pred_betas, mode='c')
-#    poses_filt = filter_variable(pred_poses, mode='a')
-#    pos_filt = filter_variable(T_W_B[:, :3, 3].copy(), mode='a')
 
     T_W_B_filt = T_W_B.copy()
     T_W_B_filt[:, :3, 3] = pos_filt
@@ -161,20 +154,20 @@ def main(args):
                                'Filtered': err_3d_impr[:, 6]}
                    )
 
-#        # XY & Z Plot
-#        fname = 'err_xy_z_%s.png' % (clip_name)
-#        full_path = os.path.join(plot_path, fname)
-#        plot_error('xyz-error',
-#                   pelvis={'base': err_3d_base[:, 0],
-#                           'impr': err_3d_impr[:, 0]},
-#                   head={'base': err_3d_base[:, 3],
-#                         'impr': err_3d_impr[:, 3]}
-#                   )
-#
-#        plot_3d_tracks(pelvis=joints_gt_W[:, 0, :3], prediction=joints_baseline_W[:, 0, :3])
+        # XY & Z Plot
+        fname = 'err_xy_z_%s.png' % (clip_name)
+        full_path = os.path.join(plot_path, fname)
+        plot_error('xyz-error',
+                   pelvis={'base': err_3d_base[:, 0],
+                           'impr': err_3d_impr[:, 0]},
+                   head={'base': err_3d_base[:, 3],
+                         'impr': err_3d_impr[:, 3]}
+                   )
+
+        plot_3d_tracks(pelvis=joints_gt_W[:, 0, :3], prediction=joints_baseline_W[:, 0, :3])
 
         # Coordinate plots
-        for i in [0,3]:#j_idx:
+        for i in j_idx:
             j_name = C.MHAD_JOINT_NAMES[C.MHAD_2_HPE3D[i]]
             fname = 'coords_%s_%s.png' % (clip_name, j_name)
             full_path = os.path.join(plot_path, fname)
@@ -188,23 +181,15 @@ def main(args):
         red_color = (0.3, 0.3, 0.8, 1.0)
         green_color = (0.3, 0.8, 0.3, 1.0)  # cv2: BGR
         blue = (205, 0, 0)
-        #blue = (255, 0, 0)
         green = (113, 179, 60)
-        #green = (0, 255, 0)
         red = (71, 99, 255)
-        #red = (0, 0, 255)
 
         renderer = Renderer(focal_length=gt_K[(0, 1), (0, 1)],
                             img_res=[640,480],
                             camera_center=gt_K[:2, 2],
                             faces=smpl.faces)
         _, seq_name = os.path.split(args.pkl_file)
-#        import pdb;pdb.set_trace()
-        #new_folder = os.path.join(dataset_path, 'Render', seq_name[:-4] + '_filt_a_joints')
-        #new_folder = os.path.join(dataset_path, 'Render', seq_name[:-4] + '_base_a_joints')
-        #new_folder = os.path.join(dataset_path, 'Render', seq_name[:-4] + '_base_a_body')
-        new_folder = os.path.join(dataset_path, 'Render', seq_name[:-4] + '_filt_a_body')
-        #new_folder = os.path.join(dataset_path, 'Render', seq_name[:-4])
+        new_folder = os.path.join(dataset_path, 'Render', seq_name[:-4])
         try:
             os.mkdir(new_folder)
         except FileExistsError:
@@ -223,22 +208,23 @@ def main(args):
             verts_impr_h = np.insert(verts_impr, 3, 1, axis=2)
             verts_impr_W = np.einsum('bji,bki->bkj', T_W_B, verts_impr_h)[:, :, :-1]
 
- #           img = renderer(verts_base[i], T_B_C[i].copy(), img.copy(), color=red_color)
+            # Render Meshes
+            img = renderer(verts_base[i], T_B_C[i].copy(), img.copy(), color=red_color)
             img = renderer(verts_impr[i], T_B_C_filt[i].copy(), img, color=green_color)
 
-   #         for j in range(18):
-   #             cv2.circle(img,
-   #                        (int(proj_joints_base[i, j, 0]),
-   #                         int(proj_joints_base[i, j, 1])), 4, red, -1)
-  #              cv2.circle(img,
-  #                         (int(proj_joints_impr[i, j, 0]),
-  #                          int(proj_joints_impr[i, j, 1])), 4, green, -1)
-     #           cv2.circle(img,
-     #                      (int(gt_kp2d[i, j, 0]),
-     #                       int(gt_kp2d[i, j, 1])), 4, blue, -1)
+            # Render Joint reprojections
+            for j in range(18):
+                cv2.circle(img,
+                           (int(proj_joints_base[i, j, 0]),
+                            int(proj_joints_base[i, j, 1])), 4, red, -1)
+                cv2.circle(img,
+                           (int(proj_joints_impr[i, j, 0]),
+                            int(proj_joints_impr[i, j, 1])), 4, green, -1)
+                cv2.circle(img,
+                           (int(gt_kp2d[i, j, 0]),
+                            int(gt_kp2d[i, j, 1])), 4, blue, -1)
 
         cv2.imwrite(os.path.join(new_folder, image_name[:-4] + '.png'), img)
-#    return (mse_base, mse_impr)
 
 
 if __name__ == "__main__":

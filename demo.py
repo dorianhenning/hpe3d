@@ -104,7 +104,7 @@ def main(args):
         scene = trimesh.Scene()
 
         cam = trimesh.scene.Camera(fov=(50, 70))
-        geom = trimesh.creation.camera_marker(cam, marker_height=0.05, origin_size=0.025)
+        geom = trimesh.creation.camera_marker(cam, marker_height=0.5, origin_size=0.05)
         scene.add_geometry(geom[0], transform=T_W_C[i], node_name='livecam')
         scene.add_geometry(geom[0], transform=T_W_C[i], node_name='livecam_frame')
 
