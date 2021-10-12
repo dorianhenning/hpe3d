@@ -1,4 +1,4 @@
-opencv-python==4.1.2.30
+opencv-python==4.2.0.32
 tqdm==4.28.1
 smplx==0.1.13
 scipy==1.4.1
