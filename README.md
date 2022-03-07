@@ -55,3 +55,18 @@ python eval.py --dataset 'dataset_name' --pkl_file 'path/to/pkl_file'
 ```
 
 Other options can be used by calling `python eval.py --help` or inspecting the script. Currently, our evaluation only supports the two datasets [3DPW](https://virtualhumans.mpi-inf.mpg.de/3DPW/) and [Berkeley MHAD](https://tele-immersion.citris-uc.org/berkeley_mhad), others will follow.
+
+
+
+## Citation
+
+If you find HPE3D useful, please consider citing the report as:
+
+```
+@misc{hpe3d,
+  title = {{HPE3D: Human Pose Estimation in 3D}},
+  author = {Henning, Dorian and Guler, Alp and Leutenegger, Stefan and Zafeiriou, Stefanos},
+  year = {2020},
+  howpublished = {\url{https://github.com/dorianhenning/hpe3d}}
+}
+```
